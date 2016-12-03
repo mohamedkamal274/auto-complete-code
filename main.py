@@ -6,6 +6,7 @@ class ClassParser(object):
    class_expr = re.compile(r'class (.+?)(?:\((.+?)\))?:')
    python_file_expr = re.compile(r'^\w+[.]py$')
    methodre = re.compile(r'def (.+?)(?:\((.+?)\))?:')
+   variable = re.compile(r'(.+?)(?:\((.+?)\))?=')
    indent = "   "
 
    def findAllClasses(self, python_file):
@@ -26,15 +27,20 @@ class ClassParser(object):
                python_files.append(join(root,file))
       return python_files
 
-   def parse(self, directory):
-      #Parse the directory and spit out a csv file
-
-      python_files = self.findAllPythonFiles(directory)
-      for file in python_files:
-          classes = self.findAllClasses(file)
-          self.method_modules(file)
-          for classname in classes:
-             self.findClassemethod(classname[0],file)
+   def parse(self, directory, output_directory="classes.csv"):
+      """ Parse the directory and spit out a csv file
+      """
+      with open(output_directory,'w') as csv_file:
+         writer = csv.writer(csv_file)
+         python_files = self.findAllPythonFiles(directory)
+         for file in python_files:
+            classes = self.findAllClasses(file)
+            self.method_modules(file)
+            self.variable_moudles(file)
+            for classname in classes:
+               self.findClassemethod(classname[0],file)
+               self.findClassevariables(classname[0],file)
+               writer.writerow([classname[0], classname[1], file])
 
    def findClassemethod(self, classname , python_file):
        #Read in a python file and return all the class methodes
@@ -54,6 +60,25 @@ class ClassParser(object):
                     if class_name:
                         flag = False
        print( python_file ,' ',classname , ' : ' ,methods)
+
+   def findClassevariables(self, classname, python_file):
+       varibles = []
+       classnamere = re.compile(r'class ' + classname + '(?:\((.+?)\))?:')
+       with open(python_file) as infile:
+           flag = True
+           for line in infile:
+               if flag == False:
+                   if self.indent in line:
+                       if not 'def' in line and not 'class' in line:
+                           varibles += self.variable.findall(line)
+                   else:
+                       break
+               if flag == True:
+                   class_name = classnamere.findall(line)
+                   if class_name:
+                       flag = False
+       print(classname, ' : ', varibles)
+
    def method_modules(self,python_file):
         methods = []
         with open(python_file) as infile:
@@ -61,6 +86,16 @@ class ClassParser(object):
                if not self.indent in line:
                    methods += self.methodre.findall(line)
         print(python_file ,' method for modules' , methods)
+
+   def variable_moudles(self, python_file):
+       varibles = []
+       with open(python_file) as infile:
+           for line in infile:
+               if not self.indent in line and not 'def' in line and not 'class' in line:
+                   varibles += self.variable.findall(line)
+       print('varibles for modules', varibles)
+
+
 if __name__=="__main__":
    parser = ClassParser()
    dir_path = os.path.dirname(os.path.realpath(__file__)) + r"\code-files"
