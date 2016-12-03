@@ -27,20 +27,17 @@ class ClassParser(object):
                python_files.append(join(root,file))
       return python_files
 
-   def parse(self, directory, output_directory="classes.csv"):
+   def parse(self, directory):
       """ Parse the directory and spit out a csv file
       """
-      with open(output_directory,'w') as csv_file:
-         writer = csv.writer(csv_file)
-         python_files = self.findAllPythonFiles(directory)
-         for file in python_files:
-            classes = self.findAllClasses(file)
-            self.method_modules(file)
-            self.variable_moudles(file)
-            for classname in classes:
-               self.findClassemethod(classname[0],file)
-               self.findClassevariables(classname[0],file)
-               writer.writerow([classname[0], classname[1], file])
+      python_files = self.findAllPythonFiles(directory)
+      for file in python_files:
+          classes = self.findAllClasses(file)
+          self.method_modules(file)
+          self.variable_moudles(file)
+          for classname in classes:
+              self.findClassemethod(classname[0],file)
+              self.findClassevariables(classname[0],file)
 
    def findClassemethod(self, classname , python_file):
        #Read in a python file and return all the class methodes
@@ -77,6 +74,7 @@ class ClassParser(object):
                    class_name = classnamere.findall(line)
                    if class_name:
                        flag = False
+       varibles = [string[0].replace(" ","") for string in varibles]
        print(classname, ' : ', varibles)
 
    def method_modules(self,python_file):
@@ -93,10 +91,11 @@ class ClassParser(object):
            for line in infile:
                if not self.indent in line and not 'def' in line and not 'class' in line:
                    varibles += self.variable.findall(line)
+       varibles = [string[0].replace(" ","") for string in varibles]
        print('varibles for modules', varibles)
 
 
 if __name__=="__main__":
    parser = ClassParser()
-   dir_path = os.path.dirname(os.path.realpath(__file__)) + r"\code-files"
+   dir_path = os.path.dirname(os.path.realpath(__file__)) + os.sep +"code-files"
    parser.parse(dir_path)

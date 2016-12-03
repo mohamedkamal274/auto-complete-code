@@ -3,3 +3,4 @@ class kkA(object):
         print("hello")
 def hellomodulesA():
     print("mldkmlfd")
+x=0
