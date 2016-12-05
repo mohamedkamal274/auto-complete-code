@@ -5,8 +5,9 @@ from os.path import join
 class ClassParser(object):
    class_expr = re.compile(r'class (.+?)(?:\((.+?)\))?:')
    python_file_expr = re.compile(r'^\w+[.]py$')
-   methodre = re.compile(r'def (.+?)(?:\((.+?)\))?:')
-   variable = re.compile(r'(.+?)(?:\((.+?)\))?=')
+   methodre = re.compile(r'def (.+?)(?:\((.*?)\))?\s*:')
+   variable = re.compile(r'\s*(.+)\s*=\s*(.+)')
+   objectre = re.compile(r'\s*(.+)=(.+)\.(.+)')
    indent = "   "
 
    def findAllClasses(self, python_file):
@@ -15,6 +16,7 @@ class ClassParser(object):
       with open(python_file) as infile:
          everything = infile.read()
          class_names = ClassParser.class_expr.findall(everything)
+         self.addNameeClasses(python_file,class_names)
          return class_names
 
    def findAllPythonFiles(self, directory):
@@ -25,6 +27,7 @@ class ClassParser(object):
          for file in files:
             if ClassParser.python_file_expr.match(file):
                python_files.append(join(root,file))
+      self.addNameeModule(python_files)
       return python_files
 
    def parse(self, directory):
@@ -56,7 +59,8 @@ class ClassParser(object):
                     class_name = classnamere.findall(line)
                     if class_name:
                         flag = False
-       print( python_file ,' ',classname , ' : ' ,methods)
+       #print( python_file ,' ',classname , ' : ' ,methods)
+       self.addmethodClass(python_file,classname,methods)
 
    def findClassevariables(self, classname, python_file):
        varibles = []
@@ -67,15 +71,18 @@ class ClassParser(object):
                if flag == False:
                    if self.indent in line:
                        if not 'def' in line and not 'class' in line:
-                           varibles += self.variable.findall(line)
+                           if '.' in line:
+                            varibles += self.objectre.findall(line)
+                           else:
+                               varibles += self.variable.findall(line)
                    else:
                        break
                if flag == True:
                    class_name = classnamere.findall(line)
                    if class_name:
                        flag = False
-       varibles = [string[0].replace(" ","") for string in varibles]
-       print(classname, ' : ', varibles)
+       #print(classname, ' : ', varibles)
+       self.addvariableClass(python_file,classname,varibles)
 
    def method_modules(self,python_file):
         methods = []
@@ -83,16 +90,70 @@ class ClassParser(object):
            for line in infile:
                if not self.indent in line:
                    methods += self.methodre.findall(line)
-        print(python_file ,' method for modules' , methods)
+        #print(python_file ,' method for modules' , methods)
+        self.addmethodModule(python_file,methods)
 
    def variable_moudles(self, python_file):
        varibles = []
        with open(python_file) as infile:
            for line in infile:
                if not self.indent in line and not 'def' in line and not 'class' in line:
-                   varibles += self.variable.findall(line)
-       varibles = [string[0].replace(" ","") for string in varibles]
-       print('varibles for modules', varibles)
+                   if '.' in line:
+                       varibles += self.objectre.findall(line)
+                   else:
+                       varibles += self.variable.findall(line)
+       #print('varibles for modules', varibles)
+       self.addvariableModule(python_file,varibles)
+
+
+
+
+
+   def getTail(self,python_file):
+       head, tail = os.path.split(python_file)
+       return tail
+
+   def addNameeModule(self,modulename):
+
+       for module in modulename:
+        tail=self.getTail(module)
+        print (tail)
+
+
+   def addNameeClasses(self,python_file,classnameS):
+       tail = self.getTail(python_file)
+
+       for classname in classnameS:
+           print ('module:', tail, 'className:', classname[0],'inheritedClass:',classname[1])
+
+
+   def addmethodModule(self, python_file,methods):
+       tail = self.getTail(python_file)
+       for method in methods:
+        print ('module:', tail,'function: ',method[0],'parameter:',method[1])
+
+
+   def addvariableModule(self, python_file,varibles):
+       tail = self.getTail(python_file)
+       for variable in varibles:
+           if(len(variable)>2):
+               print ('module:', tail,'object:',variable[0],'moduleOfobject:',variable[1],'class:',variable[2])
+           else: #can check if object in classnames or Not if found then 'object:'=variable[0]& 'class:',variable[1]
+               print ('module:', tail,'object:',variable[0],'ClassORvariable:',variable[1])
+
+
+   def addvariableClass(self,python_file,classname,varibles):
+       tail = self.getTail(python_file)
+       for variable in varibles:
+           if (len(variable) > 2):
+               print ('module:', tail,'className:',classname, 'object:', variable[0], 'moduleOfobject:', variable[1], 'class:', variable[2])
+           else:  # can check if object in classnames or Not if found then 'object:'=variable[0]& 'class:',variable[1]
+               print ('module:', tail,'className:',classname, 'object:', variable[0],'ClassORvariable:',variable[1])
+
+   def addmethodClass(self, python_file,classname,methods):
+       tail = self.getTail(python_file)
+       for method in methods:
+           print ('module:', tail, 'className:',classname, 'function:', method[0], 'parameter:', method[1])
 
 
 if __name__=="__main__":
