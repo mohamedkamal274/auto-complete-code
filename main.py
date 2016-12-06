@@ -135,11 +135,21 @@ class ClassParser(object):
 
    def addvariableModule(self, python_file,varibles):
        tail = self.getTail(python_file)
+       module_class=[]
+       classes=self.findAllClasses(python_file);
+       for classname in classes:
+         module_class.append(classname[0])
+
+       #print ("calsses : --> ",module_class)
+
        for variable in varibles:
            if(len(variable)>2):
                print ('module:', tail,'object:',variable[0],'moduleOfobject:',variable[1],'class:',variable[2])
-           else: #can check if object in classnames or Not if found then 'object:'=variable[0]& 'class:',variable[1]
-               print ('module:', tail,'object:',variable[0],'ClassORvariable:',variable[1])
+           else:
+                if variable[1] in module_class :#can check if object in classnames or Not if found then 'object:'=variable[0]& 'class:',variable[1]
+                 print ('module:', tail,'object:',variable[0],'Class:',variable[1])
+                else:
+                    print ('module:', tail, 'object:', variable[0], 'variable:', variable[1])
 
 
    def addvariableClass(self,python_file,classname,varibles):

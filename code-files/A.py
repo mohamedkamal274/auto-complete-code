@@ -1,4 +1,4 @@
-class kkA(object):
+class kkA():
     def hello2(self):
         print("hello")
 def hellomodulesA():
