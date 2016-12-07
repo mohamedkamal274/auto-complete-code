@@ -3,7 +3,7 @@ import os
 from os.path import join
 
 class ClassParser(object):
-   class_expr = re.compile(r'class (.+?)(?:\((.+?)\))?:')
+   class_expr = re.compile(r'class (.+?)(?:\((.*?)\))?:')
    python_file_expr = re.compile(r'^\w+[.]py$')
    methodre = re.compile(r'def (.+?)(?:\((.*?)\))?\s*:')
    variable = re.compile(r'\s*(.+)\s*=\s*(.+)')
@@ -16,7 +16,6 @@ class ClassParser(object):
       with open(python_file) as infile:
          everything = infile.read()
          class_names = ClassParser.class_expr.findall(everything)
-         self.addNameeClasses(python_file,class_names)
          return class_names
 
    def findAllPythonFiles(self, directory):
@@ -36,6 +35,7 @@ class ClassParser(object):
       python_files = self.findAllPythonFiles(directory)
       for file in python_files:
           classes = self.findAllClasses(file)
+          self.addNameeClasses(file, classes)  #Name of classes of every file
           self.method_modules(file)
           self.variable_moudles(file)
           for classname in classes:
@@ -133,15 +133,17 @@ class ClassParser(object):
         print ('module:', tail,'function: ',method[0],'parameter:',method[1])
 
 
+   def getClassesNameas(self,python_file):
+       module_class = []
+       classes = self.findAllClasses(python_file);
+       for classname in classes:
+           module_class.append(classname[0])
+       return module_class
+
    def addvariableModule(self, python_file,varibles):
        tail = self.getTail(python_file)
-       module_class=[]
-       classes=self.findAllClasses(python_file);
-       for classname in classes:
-         module_class.append(classname[0])
-
+       module_class=self.getClassesNameas(python_file)
        #print ("calsses : --> ",module_class)
-
        for variable in varibles:
            if(len(variable)>2):
                print ('module:', tail,'object:',variable[0],'moduleOfobject:',variable[1],'class:',variable[2])
@@ -149,16 +151,20 @@ class ClassParser(object):
                 if variable[1] in module_class :#can check if object in classnames or Not if found then 'object:'=variable[0]& 'class:',variable[1]
                  print ('module:', tail,'object:',variable[0],'Class:',variable[1])
                 else:
-                    print ('module:', tail, 'object:', variable[0], 'variable:', variable[1])
+                    print ('module:', tail, 'object:', variable[0], 'Value:', variable[1])
 
 
    def addvariableClass(self,python_file,classname,varibles):
        tail = self.getTail(python_file)
+       module_class=self.getClassesNameas(python_file)
        for variable in varibles:
            if (len(variable) > 2):
                print ('module:', tail,'className:',classname, 'object:', variable[0], 'moduleOfobject:', variable[1], 'class:', variable[2])
-           else:  # can check if object in classnames or Not if found then 'object:'=variable[0]& 'class:',variable[1]
-               print ('module:', tail,'className:',classname, 'object:', variable[0],'ClassORvariable:',variable[1])
+           else:
+               if variable[1] in module_class:
+                   print ('module:', tail,'className:',classname, 'object:', variable[0], 'Class:', variable[1])
+               else:
+                   print ('module:', tail,'className:',classname, 'object:', variable[0], 'Value:', variable[1])
 
    def addmethodClass(self, python_file,classname,methods):
        tail = self.getTail(python_file)

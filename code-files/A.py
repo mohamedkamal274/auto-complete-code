@@ -4,3 +4,8 @@ class kkA():
 def hellomodulesA():
     print("mldkmlfd")
 x=0
+
+z=zz
+class fun():
+    def hellos(self):
+        print("hello")
