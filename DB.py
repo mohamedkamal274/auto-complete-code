@@ -6,15 +6,13 @@ cursor = conn.cursor()  #We need to use cursor to return data from selected line
 
 #DB creation Code
 '''
-CREATE TABLE moduleVariables (
-    ID             INTEGER PRIMARY KEY AUTOINCREMENT,
-    moduleID       INTEGER REFERENCES Modules (ID) ON DELETE CASCADE,
-    variableName   VARCHAR,
-    count          INTEGER DEFAULT (0),
-    objectOf_Class INTEGER REFERENCES classes (ID) ON DELETE CASCADE
-                           DEFAULT NULL,
-    fromModule     INTEGER REFERENCES Modules (ID) ON DELETE CASCADE
-                           DEFAULT NULL
+CREATE TABLE classes (
+    ID                INTEGER PRIMARY KEY AUTOINCREMENT,
+    className         VARCHAR,
+    moduleID          INTEGER REFERENCES Modules (ID) ON DELETE CASCADE,
+    inherited_classID INTEGER REFERENCES classes (ID) ON DELETE SET NULL
+                              DEFAULT NULL,
+    count             INTEGER DEFAULT (0)
 );
 
 CREATE TABLE classFunction (
