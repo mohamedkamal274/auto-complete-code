@@ -24,6 +24,5 @@ def hellomodules3(x):
 
 z=sdsdssdsa
 
-obj=modu.cls
 
 obj2=zz

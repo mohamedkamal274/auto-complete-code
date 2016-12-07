@@ -1,13 +1,17 @@
 import re
 import os
 from os.path import join
+import DB
+
+database = DB.DATABASE()
 
 class ClassParser(object):
    class_expr = re.compile(r'class (.+?)(?:\((.*?)\))?:')
    python_file_expr = re.compile(r'^\w+[.]py$')
    methodre = re.compile(r'def (.+?)(?:\((.*?)\))?\s*:')
    variable = re.compile(r'\s*(.+)\s*=\s*(.+)')
-   objectre = re.compile(r'\s*(.+)=(.+)\.(.+)')
+   objectre = re.compile(r'\s*(.+)\s*=\s*(.+)\.(.+)')
+
    indent = "   "
 
    def findAllClasses(self, python_file):
@@ -116,15 +120,15 @@ class ClassParser(object):
    def addNameeModule(self,modulename):
 
        for module in modulename:
-        tail=self.getTail(module)
-        print (tail)
-
+        tail = self.getTail(module)
+        type(tail)
+        #database.addModule(self, tail)
 
    def addNameeClasses(self,python_file,classnameS):
        tail = self.getTail(python_file)
 
        for classname in classnameS:
-           print ('module:', tail, 'className:', classname[0],'inheritedClass:',classname[1])
+           database.addClass(tail,classname[0],classname[1])
 
 
    def addmethodModule(self, python_file,methods):
@@ -146,12 +150,16 @@ class ClassParser(object):
        #print ("calsses : --> ",module_class)
        for variable in varibles:
            if(len(variable)>2):
-               print ('module:', tail,'object:',variable[0],'moduleOfobject:',variable[1],'class:',variable[2])
+               print(variable[1])
+               database.addModuleVariables(tail,variable[0],variable[2],variable[1],2)
+              # print ('module:', tail,'object:',variable[0],'moduleOfobject:',variable[1],'class:',variable[2])
            else:
                 if variable[1] in module_class :#can check if object in classnames or Not if found then 'object:'=variable[0]& 'class:',variable[1]
-                 print ('module:', tail,'object:',variable[0],'Class:',variable[1])
+                    #print('module:', tail, 'object:', variable[0], 'Class:', variable[1])
+                    database.addModuleVariables(tail,variable[0],variable[1],None,1) #add object
                 else:
-                    print ('module:', tail, 'object:', variable[0], 'Value:', variable[1])
+                    #print('module:', tail, 'object:', variable[0], 'Value:', variable[1])
+                     database.addModuleVariables(tail, variable[0], None,None, 0) #add Normal variable
 
 
    def addvariableClass(self,python_file,classname,varibles):
