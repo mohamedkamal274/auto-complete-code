@@ -122,7 +122,7 @@ class ClassParser(object):
        for module in modulename:
         tail = self.getTail(module)
         type(tail)
-        #database.addModule(self, tail)
+        #database.addModule(tail)
 
    def addNameeClasses(self,python_file,classnameS):
        tail = self.getTail(python_file)
@@ -134,7 +134,8 @@ class ClassParser(object):
    def addmethodModule(self, python_file,methods):
        tail = self.getTail(python_file)
        for method in methods:
-        print ('module:', tail,'function: ',method[0],'parameter:',method[1])
+          database.addModuleMethods(tail , method[0])
+        #print ('module:', tail,'function: ',method[0],'parameter:',method[1])
 
 
    def getClassesNameas(self,python_file):
@@ -150,7 +151,6 @@ class ClassParser(object):
        #print ("calsses : --> ",module_class)
        for variable in varibles:
            if(len(variable)>2):
-               print(variable[1])
                database.addModuleVariables(tail,variable[0],variable[2],variable[1],2)
               # print ('module:', tail,'object:',variable[0],'moduleOfobject:',variable[1],'class:',variable[2])
            else:
@@ -169,15 +169,17 @@ class ClassParser(object):
            if (len(variable) > 2):
                print ('module:', tail,'className:',classname, 'object:', variable[0], 'moduleOfobject:', variable[1], 'class:', variable[2])
            else:
-               if variable[1] in module_class:
+               if variable[1] in module_class: #3mlt object mn nfs el module y3ne el classen mojdeen fe nfs el module
                    print ('module:', tail,'className:',classname, 'object:', variable[0], 'Class:', variable[1])
-               else:
+               else: #VARIABLE 3ADY
+
                    print ('module:', tail,'className:',classname, 'object:', variable[0], 'Value:', variable[1])
 
    def addmethodClass(self, python_file,classname,methods):
        tail = self.getTail(python_file)
        for method in methods:
-           print ('module:', tail, 'className:',classname, 'function:', method[0], 'parameter:', method[1])
+           database.addfunctionsinclass(classname,method[0])
+           #print ('module:', tail, 'className:',classname, 'function:', method[0], 'parameter:', method[1])
 
 
 if __name__=="__main__":

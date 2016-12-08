@@ -70,7 +70,6 @@ class DATABASE():
     #get module id to be added in onther tables as FK
     def getModuleID(self, moduleName):
         query = "SELECT ID FROM 'Modules' where moduleName = '" + moduleName + "'"
-        print(query)
         l = cursor.execute(query)
         moduleID = l.fetchone()  #fetch returns a list
         return moduleID[0]
@@ -120,3 +119,15 @@ class DATABASE():
 
         cursor.execute(query)
         conn.commit()
+
+    def addModuleMethods(self,moduleName,methodName):
+        moduleID = self.getModuleID(moduleName)
+        query = "insert into moduleFunctions (moduleID,functionName) values("+ str(moduleID) + "," + "'" + methodName + "'" + ")"
+        cursor.execute(query)
+        conn.commit()
+
+    def addfunctionsinclass(self,ClassName,methodName):
+         class_id  = self.getClassID(ClassName)
+         query = "insert into classFunction (classID,functionName) values ("+ str(class_id) + "," + "'" + methodName + "'" +")"
+         cursor.execute(query)
+         conn.commit()

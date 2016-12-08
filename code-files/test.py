@@ -14,7 +14,8 @@ class zz(object):
     def hello4(self) :
         print("hello")
     x=0
-    z=ss.xSDAD
+    z=A.kkA
+    y=kk
 
 def hellomodules2():
     print("bbbbla")
