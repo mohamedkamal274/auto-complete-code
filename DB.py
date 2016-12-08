@@ -120,14 +120,42 @@ class DATABASE():
         cursor.execute(query)
         conn.commit()
 
+    #adds the function which are in the module
     def addModuleMethods(self,moduleName,methodName):
         moduleID = self.getModuleID(moduleName)
         query = "insert into moduleFunctions (moduleID,functionName) values("+ str(moduleID) + "," + "'" + methodName + "'" + ")"
         cursor.execute(query)
         conn.commit()
 
+    #add functions which are in class
     def addfunctionsinclass(self,ClassName,methodName):
          class_id  = self.getClassID(ClassName)
          query = "insert into classFunction (classID,functionName) values ("+ str(class_id) + "," + "'" + methodName + "'" +")"
          cursor.execute(query)
          conn.commit()
+
+    #add class normal variables
+    def addClass_Normalvariable (self, ClassName,varName):
+        class_id = self.getClassID(ClassName)
+        query = "insert into classVariables (classID,variableName)values (" + str(class_id) + "," +"'"+ varName + "'"+ ")"
+        cursor.execute(query)
+        conn.commit()
+    #add class variables which are object from classes in the same module
+    def addClass_object_variable(self, ClassName, varName,class_object):
+        class_id = self.getClassID(ClassName)
+        classObjectID = self.getClassID(class_object)
+        query = "insert into classVariables (classID,variableName,objectOf)values (" + str(class_id) + "," + "'" + varName + "'" + "," + str(classObjectID) +")"
+        cursor.execute(query)
+        conn.commit()
+
+    #add class vaiables which are objects from another classes in another modules
+    def addClass_object_othermodule(self, ClassName, varName, class_object ,class_module):
+        v = class_module+".py"
+        class_id = self.getClassID(ClassName)
+        classObjectID= self.getClassID(class_object)
+        moduleID = self.getModuleID(class_module+".py")
+        query = "insert into classVariables (classID,variableName,objectOf,fromModule )values (" + str(  class_id) + "," + "'" + varName + "'" + "," + str(classObjectID) + "," + str(moduleID) + ")"
+        cursor.execute(query)
+        conn.commit()
+
+

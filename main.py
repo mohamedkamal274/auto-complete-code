@@ -122,7 +122,7 @@ class ClassParser(object):
        for module in modulename:
         tail = self.getTail(module)
         type(tail)
-        #database.addModule(tail)
+        #database.addModule(tail)                       #should be enabled if new module is made because there is unique constraints in moduleName column
 
    def addNameeClasses(self,python_file,classnameS):
        tail = self.getTail(python_file)
@@ -167,13 +167,15 @@ class ClassParser(object):
        module_class=self.getClassesNameas(python_file)
        for variable in varibles:
            if (len(variable) > 2):
-               print ('module:', tail,'className:',classname, 'object:', variable[0], 'moduleOfobject:', variable[1], 'class:', variable[2])
+                database.addClass_object_othermodule(classname,variable[0],variable[2],variable[1])
+              # print ('module:', tail,'className:',classname, 'object:', variable[0], 'moduleOfobject:', variable[1], 'class:', variable[2])
            else:
                if variable[1] in module_class: #3mlt object mn nfs el module y3ne el classen mojdeen fe nfs el module
-                   print ('module:', tail,'className:',classname, 'object:', variable[0], 'Class:', variable[1])
+                   database. addClass_object_variable(classname,variable[0],variable[1])
+                   #print ('module:', tail,'className:',classname, 'object:', variable[0], 'Class:', variable[1])
                else: #VARIABLE 3ADY
-
-                   print ('module:', tail,'className:',classname, 'object:', variable[0], 'Value:', variable[1])
+                   database.addClass_Normalvariable(classname,variable[0])
+                   #print ('module:', tail,'className:',classname, 'object:', variable[0], 'Value:', variable[1])
 
    def addmethodClass(self, python_file,classname,methods):
        tail = self.getTail(python_file)
