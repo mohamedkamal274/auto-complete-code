@@ -158,4 +158,33 @@ class DATABASE():
         cursor.execute(query)
         conn.commit()
 
+    #get class data and get parent class data if he inherts
+    def selectClassData(self, className):
+        classID = self.getClassID(className)
+        list = []
+        query = "SELECT variableName FROM classVariables where classID=" + str(classID)
+        record = cursor.execute(query)
+        for x in record:
+            list.append(x[0])
+        query = "SELECT functionName FROM classFunction where classID=" + str(classID)
+        record = cursor.execute(query)
+        for x in record:
+            list.append(x[0])
+
+        #get PARENT DATA
+        query = "SELECT inherited_classID FROM classes WHERE className =" + "'" + className + "'"
+        record = cursor.execute(query)
+        parentClass = record.fetchone()
+        if parentClass != None:
+            query = "SELECT variableName FROM classVariables where classID=" + str(parentClass[0])
+            record = cursor.execute(query)
+            for x in record:
+                list.append(x[0])
+            query = "SELECT functionName FROM classFunction where classID=" + str(parentClass[0])
+            record = cursor.execute(query)
+            for x in record:
+                list.append(x[0])
+
+        return list
+
 

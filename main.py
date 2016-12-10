@@ -6,7 +6,7 @@ import DB
 database = DB.DATABASE()
 
 class ClassParser(object):
-   class_expr = re.compile(r'class (.+?)(?:\((.*?)\))?:')
+   class_expr = re.compile(r'class (.+?)(?:\((.+)*\))?\:')
    python_file_expr = re.compile(r'^\w+[.]py$')
    methodre = re.compile(r'def (.+?)(?:\((.*?)\))?\s*:')
    variable = re.compile(r'\s*(.+)\s*=\s*(.+)')
@@ -49,7 +49,7 @@ class ClassParser(object):
    def findClassemethod(self, classname , python_file):
        #Read in a python file and return all the class methodes
 
-       classnamere = re.compile(r'class '+classname+'(?:\((.+?)\))?:')
+       classnamere = re.compile(r'class '+classname+'(?:\((.+)*\))?\:')
        methods = []
        with open(python_file) as infile:
             flag = True
@@ -68,7 +68,7 @@ class ClassParser(object):
 
    def findClassevariables(self, classname, python_file):
        varibles = []
-       classnamere = re.compile(r'class ' + classname + '(?:\((.+?)\))?:')
+       classnamere = re.compile(r'class ' + classname + '(?:\((.+)*\))?\:')
        with open(python_file) as infile:
            flag = True
            for line in infile:
@@ -121,7 +121,6 @@ class ClassParser(object):
 
        for module in modulename:
         tail = self.getTail(module)
-        type(tail)
         #database.addModule(tail)                       #should be enabled if new module is made because there is unique constraints in moduleName column
 
    def addNameeClasses(self,python_file,classnameS):
@@ -168,7 +167,7 @@ class ClassParser(object):
        for variable in varibles:
            if (len(variable) > 2):
                 database.addClass_object_othermodule(classname,variable[0],variable[2],variable[1])
-              # print ('module:', tail,'className:',classname, 'object:', variable[0], 'moduleOfobject:', variable[1], 'class:', variable[2])
+                #print ('module:', tail,'className:',classname, 'object:', variable[0], 'moduleOfobject:', variable[1], 'class:', variable[2])
            else:
                if variable[1] in module_class: #3mlt object mn nfs el module y3ne el classen mojdeen fe nfs el module
                    database. addClass_object_variable(classname,variable[0],variable[1])

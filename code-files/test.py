@@ -1,6 +1,11 @@
-class x(object):
-    def hello(self,x,z):
+class object():
+    def helloObject(self,x,z):
         print("hello")
+    OoOoOo=9
+
+class yy(object):
+    qqqq=0
+    eeee=0
 class kk(object):
     def hello2(self):
         print("hello")
