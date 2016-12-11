@@ -187,4 +187,29 @@ class DATABASE():
 
         return list
 
+    def getAll_modules(self):
+        query = "select moduleName from Modules"
+        result = cursor.execute(query)
+        modulsName = list()
+        for row in result:
+            x=row[0]
+            modulsName.append(x[:-3])
 
+        return modulsName
+
+    def getmoduleData(self,modulsName):
+        moduleID = self.getModuleID(modulsName + ".py")
+        query = "select className from classes where moduleID = " + str(moduleID)
+        result = cursor.execute(query)
+        data = list()
+        for row in result:
+            data.append(row[0])
+        query = "select functionName from moduleFunctions where moduleID = " + str(moduleID)
+        result=cursor.execute(query)
+        for row in result:
+            data.append(row[0])
+        query = "select variableName from moduleVariables where moduleID = " + str(moduleID)
+        result=cursor.execute(query)
+        for row in result:
+            data.append(row[0])
+        return data
