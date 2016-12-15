@@ -18,10 +18,6 @@ QTextEdit {
   color: white;
   border: none;
   line-height: 1.4;
-<<<<<<< HEAD
-=======
-
->>>>>>> refs/remotes/origin/auto-complete
 }
 
 QPushButton {
@@ -38,8 +34,6 @@ QPushButton {
    box-shadow: 4px 4px 4px #999;
   font-weight: 500;
 }
-<<<<<<< HEAD
-=======
 
 QListWidget
 {
@@ -64,4 +58,3 @@ QLabel
 {
     color:#fff
 }
->>>>>>> refs/remotes/origin/auto-complete

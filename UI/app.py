@@ -1,12 +1,8 @@
 import os
 import sys
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
-<<<<<<< HEAD
-=======
-from PyQt5 import QtCore, QtGui, QtWidgets
-
->>>>>>> refs/remotes/origin/auto-complete
+from PyQt5.QtGui import *
 
 class mainScreen(QWidget):
     #
@@ -37,22 +33,6 @@ class mainScreen(QWidget):
         #Creating main widget
         self.setLayout(mainLayout)
         self.initTextEditor(mainLayout)
-<<<<<<< HEAD
-        self.show()
-
-    def initTextEditor(self, mainLayout):
-        codeEditor = QTextEdit("TEST")
-        mainLayout.addWidget(codeEditor, 0, 0)
-        codeEditor.setFontFamily("Monospace")
-        #font = QFont("OperatorMono-Light", 10)
-        #codeEditor.setFont(font)
-        #Resize the textfield to fit the screen
-        codeEditor.resize(codeEditor.document().size().width(), codeEditor.document().size().height() + 10);
-
-        importFileButton = QPushButton("+", self)
-        importFileButton.move(self.width() * 0.9, self.height() * 0.84)
-
-=======
         self.initAutoCompleteList()
         self.show()
 
@@ -60,13 +40,13 @@ class mainScreen(QWidget):
         self.codeEditor = QTextEdit()
         mainLayout.addWidget(self.codeEditor, 0, 0)
         self.codeEditor.setFontFamily("Monospace")
-        #font = QFont("OperatorMono-Light", 10)
-        #codeEditor.setFont(font)
-        #Resize the textfield to fit the screen
         self.codeEditor.resize(self.codeEditor.document().size().width(), self.codeEditor.document().size().height() + 10);
+
         importFileButton = QPushButton("+", self)
         importFileButton.move(self.width() * 0.9, self.height() * 0.84)
         importFileButton.clicked.connect(self.showList)
+
+        self.codeEditor.returnPressed.connect(print ("Wohooo"))
 
     def initAutoCompleteList(self):
         self.autoComplete = QListWidget(self)
@@ -97,13 +77,15 @@ class mainScreen(QWidget):
 
     def itemSelect(self, item):
          QMessageBox.information(self, "ListWidget", "You clicked: " + item.text())
->>>>>>> refs/remotes/origin/auto-complete
+
 
 def main():
     app = QApplication(sys.argv)
     #Creating object from mainScreen
     main = mainScreen()
     sys.exit((app.exec_()))
+
+
 
 if __name__ == "__main__":
     main()
