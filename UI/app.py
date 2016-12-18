@@ -4,6 +4,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 
+
 class mainScreen(QWidget):
     #
     #Calling the super to initialize the window
@@ -18,7 +19,6 @@ class mainScreen(QWidget):
         self.setFixedSize(self.size())
         self.setWindowTitle("Auto Compelete Code")
         #Centering the screen
-        #self.move(QtGui.QApplication.desktop().availableGeometry().center() - self.frameGeometry().center())
 
         #Connect CSS File
         self.styleSheet = ''
@@ -37,22 +37,33 @@ class mainScreen(QWidget):
         self.show()
 
     def initTextEditor(self, mainLayout):
-        self.codeEditor = QTextEdit()
+        self.codeEditor = QPlainTextEdit()
         mainLayout.addWidget(self.codeEditor, 0, 0)
-        self.codeEditor.setFontFamily("Monospace")
         self.codeEditor.resize(self.codeEditor.document().size().width(), self.codeEditor.document().size().height() + 10);
+        self.font = QFont()
+        self.font.setFamily('OperatorMono-Light')
+        self.font.setFixedPitch(True)
+        self.font.setPointSize(12)
+        #self.highlighter = Highlighter(self.codeEditor.document())
+
+        self.codeEditor.setFont(self.font)
+        self.codeEditor.setTabStopWidth(20)
+
 
         importFileButton = QPushButton("+", self)
         importFileButton.move(self.width() * 0.9, self.height() * 0.84)
-        importFileButton.clicked.connect(self.showList)
-
-        self.codeEditor.returnPressed.connect(print ("Wohooo"))
+        importFileButton.clicked.connect(self.currentLocation)
 
     def initAutoCompleteList(self):
         self.autoComplete = QListWidget(self)
-        self.autoComplete.resize(300, 200)
+        self.autoComplete.resize(200, 200)
         self.autoComplete.hide()
         self.autoComplete.itemClicked.connect(self.itemSelect)
+        self.shadow = QGraphicsDropShadowEffect(self)
+        self.shadow.setBlurRadius(10)
+        self.shadow.setOffset(0)
+        self.shadow.setColor(QColor(0,0,0))
+        self.autoComplete.setGraphicsEffect(self.shadow)
 
     # AutoCompleteList Functions
 
@@ -76,16 +87,26 @@ class mainScreen(QWidget):
         numOfSuggestions.move(50,40)
 
     def itemSelect(self, item):
-         QMessageBox.information(self, "ListWidget", "You clicked: " + item.text())
+         print("ListWidget", "You clicked: " + item.text())
 
+    def saveIntoFile(self):
+        file_dir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'code-files'))
+        with open(file_dir + os.sep + "current-tab.py", 'w') as codeFile:
+            codeFile.write(self.codeEditor.toPlainText())
+
+    def currentLocation(self):
+        cursor = QTextCursor()
+        cursor = self.codeEditor.textCursor();
+        y = cursor.blockNumber() + 1
+        x = cursor.columnNumber() + 1
+        print (x, y)
+        #cursor.insertText("TEST")
 
 def main():
     app = QApplication(sys.argv)
     #Creating object from mainScreen
     main = mainScreen()
     sys.exit((app.exec_()))
-
-
 
 if __name__ == "__main__":
     main()
