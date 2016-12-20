@@ -55,6 +55,8 @@ class mainScreen(QWidget):
     def keyReleaseEvent(self, event):
         if event.key() == Qt.Key_Control:
             self.showList()
+        elif event.key() == Qt.Key_dot:
+            self.showList()
         else:
             self.suggestionList.hide()
 
