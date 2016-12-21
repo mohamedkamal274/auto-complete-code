@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5 import QtCore
+import DB
 
 
 class mainScreen(QWidget):
@@ -13,6 +14,8 @@ class mainScreen(QWidget):
     def __init__(self, parent=None):
         super(mainScreen, self).__init__()
         self.initMainWindow()
+        self.dbobject = DB.DATABASE()
+
 
     def initMainWindow(self):
         # Window sepc
@@ -41,7 +44,7 @@ class mainScreen(QWidget):
         self.codeEditor = QPlainTextEdit()
         mainLayout.addWidget(self.codeEditor, 0, 0)
         self.codeEditor.resize(self.codeEditor.document().size().width(),
-                               self.codeEditor.document().size().height() + 10);
+                               self.codeEditor.document().size().height() + 10)
         self.font = QFont()
         self.font.setFamily('OperatorMono-Light')
         self.font.setFixedPitch(True)
@@ -73,7 +76,9 @@ class mainScreen(QWidget):
     def showList(self):  # Show AutoComleteList
         rect = self.codeEditor.cursorRect()
         self.clearWidget(self.suggestionList)
-        self.fillList()
+
+        x = (self.dbobject.getAll_modules())
+        self.fillList(x)
         self.suggestionList.move(rect.x() + 7, rect.y() + 33)
         self.suggestionList.setCurrentRow(0)
         self.suggestionList.show()
@@ -82,11 +87,11 @@ class mainScreen(QWidget):
     def clearWidget(self, widget):
         widget.clear()
 
-    def fillList(self):
+    def fillList(self,item):
         #Retrieve suggestion from selectCurrentWord()
         print(self.selectCurrentWord())
-        for i in range(1, 30):
-            self.suggestionList.addItem("QListWidget Item #" + str(i))
+        for i in item:
+            self.suggestionList.addItem(i)
         numOfSuggestions = QLabel("There are " + str(self.suggestionList.count()) + "Suggestions")
         numOfSuggestions.move(50, 40)
 

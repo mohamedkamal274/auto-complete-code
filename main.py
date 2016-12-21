@@ -110,9 +110,6 @@ class ClassParser(object):
        self.addvariableModule(python_file,varibles)
 
 
-
-
-
    def getTail(self,python_file):
        head, tail = os.path.split(python_file)
        return tail
@@ -139,7 +136,7 @@ class ClassParser(object):
 
    def getClassesNameas(self,python_file):
        module_class = []
-       classes = self.findAllClasses(python_file);
+       classes = self.findAllClasses(python_file)
        for classname in classes:
            module_class.append(classname[0])
        return module_class
