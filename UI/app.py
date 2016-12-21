@@ -127,9 +127,12 @@ class mainScreen(QWidget):
             codeFile.write(self.codeEditor.toPlainText())
 
     def get(self,line):
-        if re.search(r'import', line):
-            arr = [self.parserclass.getTail(x).replace('.py','') for x in self.parserclass.findAllPythonFiles(self.directory)]
-            return arr
+        arr = []
+        if re.search(r'import ', line):
+            arr = [self.parserclass.getTail(x).replace('.py', '') for x in self.parserclass.findAllPythonFiles(self.directory)]
+            if re.search(r'import (.+)', line):
+                arr = [x for x in arr if re.findall(r'import (.+)', line)[0] in x]
+        return arr
 
     def parse(self,item):
         if re.search(r'import (.+)', item):
