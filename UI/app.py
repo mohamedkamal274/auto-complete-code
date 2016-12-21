@@ -3,7 +3,6 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-from PyQt5 import QtCore
 import DB
 import re
 import main as parser
@@ -17,6 +16,7 @@ class mainScreen(QWidget):
         self.dbobject = DB.DATABASE()
         self.parserclass= parser.ClassParser()
         self.directory = os.path.abspath(os.path.join(os.path.dirname(__file__),'..','code-files'))
+        self.modules = []
 
 
     def initMainWindow(self):
@@ -128,25 +128,25 @@ class mainScreen(QWidget):
 
     def get(self,line):
         arr = []
+        print(re.findall(r'import (.+)', line))
         if re.search(r'import ', line):
             arr = [self.parserclass.getTail(x).replace('.py', '') for x in self.parserclass.findAllPythonFiles(self.directory)]
             if re.search(r'import (.+)', line):
-                arr = [x for x in arr if re.findall(r'import (.+)', line)[0] in x]
+                self.modules = re.findall(r'import (.+)', line)[0].split(',')
+                arr = [x for x in arr if self.modules[-1] in x]
         return arr
 
     def parse(self,item):
         if re.search(r'import (.+)', item):
-            self.parserclass.parse(self.directory+os.sep+re.findall(r'import (.+)', item)[0].replace('\u2029','') + '.py')
-
-
+            for x in re.findall(r'import (.+)', item)[0].replace('\u2029','').split(','):
+                self.parserclass.parse(self.directory+os.sep + x + ".py")
 
 
 def main():
     app = QApplication(sys.argv)
     # Creating object from mainScreen
     main = mainScreen()
-
-    sys.exit((app.exec_()))
+    sys.exit((app.exec_(),main.dbobject.truncate()))
 
 
 if __name__ == "__main__":

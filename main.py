@@ -40,9 +40,11 @@ class ClassParser(object):
         self.addNameeClasses(file, classes)  #Name of classes of every file
         self.method_modules(file)
         self.variable_moudles(file)
+        print(classes)
         for classname in classes:
             self.findClassemethod(classname[0],file)
             self.findClassevariables(classname[0],file)
+        database.conn.commit()
       except:
           print('cant open file')
    def findClassemethod(self, classname , python_file):
@@ -76,6 +78,7 @@ class ClassParser(object):
                        if not 'def' in line and not 'class' in line:
                            if '.' in line:
                             varibles += self.objectre.findall(line)
+                            print(varibles)
                            else:
                                varibles += self.variable.findall(line)
                    else:
@@ -84,6 +87,7 @@ class ClassParser(object):
                    class_name = classnamere.findall(line)
                    if class_name:
                        flag = False
+       print(classname)
        #print(classname, ' : ', varibles)
        self.addvariableClass(python_file,classname,varibles)
 
