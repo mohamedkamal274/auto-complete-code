@@ -16,7 +16,6 @@ class ClassParser(object):
 
    def findAllClasses(self, python_file):
       #Read in a python file and return all the class names
-
       with open(python_file) as infile:
          everything = infile.read()
          class_names = ClassParser.class_expr.findall(everything)
@@ -30,22 +29,22 @@ class ClassParser(object):
          for file in files:
             if ClassParser.python_file_expr.match(file):
                python_files.append(join(root,file))
-      self.addNameeModule(python_files)
       return python_files
 
-   def parse(self, directory):
+   def parse(self, file):
       """ Parse the directory and spit out a csv file
       """
-      python_files = self.findAllPythonFiles(directory)
-      for file in python_files:
-          classes = self.findAllClasses(file)
-          self.addNameeClasses(file, classes)  #Name of classes of every file
-          self.method_modules(file)
-          self.variable_moudles(file)
-          for classname in classes:
-              self.findClassemethod(classname[0],file)
-              self.findClassevariables(classname[0],file)
-
+      try:
+        classes = self.findAllClasses(file)
+        self.addNameeModule(file)
+        self.addNameeClasses(file, classes)  #Name of classes of every file
+        self.method_modules(file)
+        self.variable_moudles(file)
+        for classname in classes:
+            self.findClassemethod(classname[0],file)
+            self.findClassevariables(classname[0],file)
+      except:
+          print('cant open file')
    def findClassemethod(self, classname , python_file):
        #Read in a python file and return all the class methodes
 
@@ -115,10 +114,8 @@ class ClassParser(object):
        return tail
 
    def addNameeModule(self,modulename):
-
-       for module in modulename:
-        tail = self.getTail(module)
-        #database.addModule(tail)                       #should be enabled if new module is made because there is unique constraints in moduleName column
+        tail = self.getTail(modulename)
+        database.addModule(tail)                       #should be enabled if new module is made because there is unique constraints in moduleName column
 
    def addNameeClasses(self,python_file,classnameS):
        tail = self.getTail(python_file)
@@ -180,7 +177,7 @@ class ClassParser(object):
            #print ('module:', tail, 'className:',classname, 'function:', method[0], 'parameter:', method[1])
 
 
-if __name__=="__main__":
-   parser = ClassParser()
-   dir_path = os.path.dirname(os.path.realpath(__file__)) + os.sep +"code-files"
-   parser.parse(dir_path)
+# if __name__=="__main__":
+#    parser = ClassParser()
+#    dir_path = os.path.dirname(os.path.realpath(__file__)) + os.sep +"code-files"
+#    parser.parse(dir_path)

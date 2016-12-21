@@ -5,8 +5,8 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5 import QtCore
 import DB
-
-
+import re
+import main as parser
 class mainScreen(QWidget):
     #
     # Calling the super to initialize the window
@@ -15,6 +15,8 @@ class mainScreen(QWidget):
         super(mainScreen, self).__init__()
         self.initMainWindow()
         self.dbobject = DB.DATABASE()
+        self.parserclass= parser.ClassParser()
+        self.directory = os.path.abspath(os.path.join(os.path.dirname(__file__),'..','code-files'))
 
 
     def initMainWindow(self):
@@ -58,6 +60,8 @@ class mainScreen(QWidget):
     def keyReleaseEvent(self, event):
         if event.key() == Qt.Key_Control:
             self.showList()
+        elif event.key() in [Qt.Key_Return, Qt.Key_Enter]:
+            self.parse(self.selectPreviousLine())
         else:
             self.suggestionList.hide()
 
@@ -76,9 +80,10 @@ class mainScreen(QWidget):
     def showList(self):  # Show AutoComleteList
         rect = self.codeEditor.cursorRect()
         self.clearWidget(self.suggestionList)
-
-        x = (self.dbobject.getAll_modules())
-        self.fillList(x)
+        arr = []
+        arr = self.get(self.selectCurrentLine())
+        if arr :
+            self.fillList(arr)
         self.suggestionList.move(rect.x() + 7, rect.y() + 33)
         self.suggestionList.setCurrentRow(0)
         self.suggestionList.show()
@@ -89,7 +94,6 @@ class mainScreen(QWidget):
 
     def fillList(self,item):
         #Retrieve suggestion from selectCurrentWord()
-        print(self.selectCurrentWord())
         for i in item:
             self.suggestionList.addItem(i)
         numOfSuggestions = QLabel("There are " + str(self.suggestionList.count()) + "Suggestions")
@@ -105,17 +109,40 @@ class mainScreen(QWidget):
         self.codeEditor.setTextCursor(self.cursor)
         word = self.cursor.selectedText()
         return word
+    def selectCurrentLine(self):
+        self.cursor.movePosition(QTextCursor.StartOfBlock)
+        self.cursor.movePosition(QTextCursor.EndOfBlock, QTextCursor.KeepAnchor)
+        line = self.cursor.selectedText()
+        return line
+
+    def selectPreviousLine(self):
+        self.cursor.movePosition(QTextCursor.PreviousBlock)
+        self.cursor.movePosition(QTextCursor.NextBlock, QTextCursor.KeepAnchor)
+        line = self.cursor.selectedText()
+        return line
 
     def saveIntoFile(self):
         file_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'code-files'))
         with open(file_dir + os.sep + "current-tab.py", 'w') as codeFile:
             codeFile.write(self.codeEditor.toPlainText())
 
+    def get(self,line):
+        if re.search(r'import', line):
+            arr = [self.parserclass.getTail(x).replace('.py','') for x in self.parserclass.findAllPythonFiles(self.directory)]
+            return arr
+
+    def parse(self,item):
+        if re.search(r'import (.+)', item):
+            self.parserclass.parse(self.directory+os.sep+re.findall(r'import (.+)', item)[0].replace('\u2029','') + '.py')
+
+
+
 
 def main():
     app = QApplication(sys.argv)
     # Creating object from mainScreen
     main = mainScreen()
+
     sys.exit((app.exec_()))
 
 

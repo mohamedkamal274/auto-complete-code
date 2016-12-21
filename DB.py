@@ -217,7 +217,7 @@ class DATABASE():
         for row in result:
             data.append(row[0])
         return data
-
-if __name__ == '__main__':
-    x = DATABASE()
-    print(x.getAll_modules())
+    def truncate(self):
+        query = "DELETE FROM Modules"
+        self.cursor.execute(query)
+        self.conn.close()
