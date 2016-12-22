@@ -169,7 +169,6 @@ class mainScreen(QWidget):
 
         elif re.search(r'(.+?)\s*\=\s*(.+)\.(.+)', item):
             groups = re.findall(r'\s*(.+?)\s*=\s*(.+)\.(.+)',item)[0]
-            print(groups)
             classes=self.dbobject.getmoduleClasses(groups[1])
             className = groups[2].replace('\u2029', '')
             if className in classes:

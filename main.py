@@ -7,7 +7,7 @@ database = DB.DATABASE()
 
 class ClassParser(object):
    class_expr = re.compile(r'class (.+?)(?:\((.+)*\))?\:')
-   python_file_expr = re.compile(r'^\w+[.]py$')
+   python_file_expr = re.compile(r'(.+?\.py)')
    methodre = re.compile(r'def (.+?)(?:\((.*?)\))?\s*:')
    variable = re.compile(r'\s*(.+)\s*=\s*(.+)')
    objectre = re.compile(r'\s*(.+)\s*=\s*(.+)\.(.+)')
@@ -35,9 +35,8 @@ class ClassParser(object):
       """ Parse the directory and spit out a csv file
       """
       try:
-        importedModules=database.getAll_modules()
-        if importedModules:
-          database.truncateModule(self.getTail(file))
+        if self.getTail(file).replace('.py','') in database.getAll_modules():
+            database.truncateModule(self.getTail(file))
 
         classes = self.findAllClasses(file)
         self.addNameeModule(file)
