@@ -60,7 +60,9 @@ class ClassParser(object):
                 if flag == False:
                     if self.indent in line:
                         methods += self.methodre.findall(line)
-                    else:
+                        print(methods, ' ', line )
+                    elif not self.indent in line and line[0].isalpha():
+                        print('end one ', line)
                         break
                 if flag == True:
                     class_name = classnamere.findall(line)
@@ -82,7 +84,7 @@ class ClassParser(object):
                             varibles += self.objectre.findall(line)
                            else:
                                varibles += self.variable.findall(line)
-                   else:
+                   elif not self.indent in line and line[0].isalpha():
                        break
                if flag == True:
                    class_name = classnamere.findall(line)
