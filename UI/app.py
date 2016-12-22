@@ -11,6 +11,7 @@ class mainScreen(QWidget):
     #
     # Calling the super to initialize the window
     #
+    dic={}
     def __init__(self, parent=None):
         super(mainScreen, self).__init__()
         self.initMainWindow()
@@ -131,12 +132,41 @@ class mainScreen(QWidget):
         if re.search(r'import ', line):
             arr = [self.parserclass.getTail(x).replace('.py', '') for x in self.parserclass.findAllPythonFiles(self.directory)]
             if re.search(r'import (.+)', line):
-                arr = [x for x in arr if re.findall(r'import (.+)', line)[0] in x]
+                modules = re.findall(r'import (.+)', line)[0].split(',')
+                arr = [x for x in arr if modules[-1] in x]
+
+
+        elif re.search(r'\.', line):
+            importedModules=self.dbobject.getAll_modules()
+            MoaduleOrObject=re.findall(r'(:?(:?.+?)=)?(.+?)\.', line)[0][2]
+
+            if MoaduleOrObject in importedModules:
+                arr=self.dbobject.getmoduleData(MoaduleOrObject)
+                word=self.selectCurrentWord()
+                arr = [x for x in arr if word in x]
+
+            elif MoaduleOrObject in self.dic.keys():
+                arr=self.dbobject.selectClassData(self.dic[MoaduleOrObject][1])
+                word = self.selectCurrentWord()
+                arr = [x for x in arr if word in x]
+
         return arr
 
-    def parse(self,item):
+    def parse(self, item):
         if re.search(r'import (.+)', item):
-            self.parserclass.parse(self.directory+os.sep+re.findall(r'import (.+)', item)[0].replace('\u2029','') + '.py')
+            for x in re.findall(r'import (.+)', item)[0].replace('\u2029', '').split(','):
+                self.parserclass.parse(self.directory + os.sep + x + ".py")
+
+        elif re.search(r'(.+)\=(.+)\.(.+)', item):
+            groups = re.findall(r'\s*(.+)\s*=\s*(.+)\.(.+)',item)[0]
+            classes=self.dbobject.getmoduleClasses(groups[1])
+            className = groups[2].replace('\u2029', '')
+            if className in classes:
+                value=(groups[1],className)
+                key=groups[0]
+                self.dic[key]=value
+                print(self.dic)
+
 
 
 
@@ -146,7 +176,7 @@ def main():
     # Creating object from mainScreen
     main = mainScreen()
 
-    sys.exit((app.exec_()))
+    sys.exit((app.exec_(), main.dbobject.truncate()))
 
 
 if __name__ == "__main__":

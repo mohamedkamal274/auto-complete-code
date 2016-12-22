@@ -69,7 +69,7 @@ class DATABASE():
     def addModule(self, module):
         query = "INSERT INTO 'Modules' (moduleName) VALUES ('"+module+"')"
         self.cursor.execute(query)
-        self.conn.commit() #to save Database
+        #self.conn.commit() #to save Database
 
     #get module id to be added in onther tables as FK
     def getModuleID(self, moduleName):
@@ -96,7 +96,7 @@ class DATABASE():
         else:
             query = "INSERT INTO classes (className,moduleID) VALUES (" + "'" + className + "'" + "," + str(moduleID) + ")"
         self.cursor.execute(query)
-        self.conn.commit()
+        #self.conn.commit()
 
 
     #if choice = 0 then it's a normal variable
@@ -122,35 +122,35 @@ class DATABASE():
             str(moduleID) + ",'" + varName + "'," + str(classID) + "," + str(fromModuleID) + ")"
 
         self.cursor.execute(query)
-        self.conn.commit()
+        #self.conn.commit()
 
     #adds the function which are in the module
     def addModuleMethods(self,moduleName,methodName):
         moduleID = self.getModuleID(moduleName)
         query = "insert into moduleFunctions (moduleID,functionName) values("+ str(moduleID) + "," + "'" + methodName + "'" + ")"
         self.cursor.execute(query)
-        self.conn.commit()
+        #self.conn.commit()
 
     #add functions which are in class
     def addfunctionsinclass(self,ClassName,methodName):
          class_id  = self.getClassID(ClassName)
          query = "insert into classFunction (classID,functionName) values ("+ str(class_id) + "," + "'" + methodName + "'" +")"
          self.cursor.execute(query)
-         self.conn.commit()
+         #self.conn.commit()
 
     #add class normal variables
     def addClass_Normalvariable (self, ClassName,varName):
         class_id = self.getClassID(ClassName)
         query = "insert into classVariables (classID,variableName)values (" + str(class_id) + "," +"'"+ varName + "'"+ ")"
         self.cursor.execute(query)
-        self.conn.commit()
+        #self.conn.commit()
     #add class variables which are object from classes in the same module
     def addClass_object_variable(self, ClassName, varName,class_object):
         class_id = self.getClassID(ClassName)
         classObjectID = self.getClassID(class_object)
         query = "insert into classVariables (classID,variableName,objectOf)values (" + str(class_id) + "," + "'" + varName + "'" + "," + str(classObjectID) +")"
         self.cursor.execute(query)
-        self.conn.commit()
+        #self.conn.commit()
 
     #add class vaiables which are objects from another classes in another modules
     def addClass_object_othermodule(self, ClassName, varName, class_object ,class_module):
@@ -160,31 +160,31 @@ class DATABASE():
         moduleID = self.getModuleID(class_module+".py")
         query = "insert into classVariables (classID,variableName,objectOf,fromModule )values (" + str(  class_id) + "," + "'" + varName + "'" + "," + str(classObjectID) + "," + str(moduleID) + ")"
         self.cursor.execute(query)
-        self.conn.commit()
+        #self.conn.commit()
 
     #get class data and get parent class data if he inherts
     def selectClassData(self, className):
         classID = self.getClassID(className)
         list = []
-        query = "SELECT variableName FROM classVariables where classID=" + str(classID)
+        query = "SELECT variableName FROM classVariables where classID= " + str(classID)
         record = self.cursor.execute(query)
         for x in record:
             list.append(x[0])
-        query = "SELECT functionName FROM classFunction where classID=" + str(classID)
+        query = "SELECT functionName FROM classFunction where classID= " + str(classID)
         record = self.cursor.execute(query)
         for x in record:
             list.append(x[0])
 
         #get PARENT DATA
-        query = "SELECT inherited_classID FROM classes WHERE className =" + "'" + className + "'"
+        query = "SELECT inherited_classID FROM classes WHERE className = " + "'" + className + "'"
         record = self.cursor.execute(query)
         parentClass = record.fetchone()
         if parentClass != None:
-            query = "SELECT variableName FROM classVariables where classID=" + str(parentClass[0])
+            query = "SELECT variableName FROM classVariables where classID= " + str(parentClass[0])
             record = self.cursor.execute(query)
             for x in record:
                 list.append(x[0])
-            query = "SELECT functionName FROM classFunction where classID=" + str(parentClass[0])
+            query = "SELECT functionName FROM classFunction where classID= " + str(parentClass[0])
             record = self.cursor.execute(query)
             for x in record:
                 list.append(x[0])
@@ -217,7 +217,19 @@ class DATABASE():
         for row in result:
             data.append(row[0])
         return data
+
+    def getmoduleClasses(self,modulsName):
+        moduleID = self.getModuleID(modulsName + ".py")
+        query = "select className from classes where moduleID = " + str(moduleID)
+        result = self.cursor.execute(query)
+        data = list()
+        for row in result:
+            data.append(row[0])
+        return data
+
     def truncate(self):
         query = "DELETE FROM Modules"
         self.cursor.execute(query)
+        self.conn.commit()
         self.conn.close()
+        return 1

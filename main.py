@@ -43,6 +43,7 @@ class ClassParser(object):
         for classname in classes:
             self.findClassemethod(classname[0],file)
             self.findClassevariables(classname[0],file)
+        database.conn.commit()
       except:
           print('cant open file')
    def findClassemethod(self, classname , python_file):
