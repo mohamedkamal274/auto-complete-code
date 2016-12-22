@@ -146,7 +146,8 @@ class ClassParser(object):
        for variable in varibles:
            if(len(variable)>2):
                database.addModuleVariables(tail,variable[0],variable[2],variable[1],2)
-              # print ('module:', tail,'object:',variable[0],'moduleOfobject:',variable[1],'class:',variable[2])
+              # print ('module:', tail,
+               # 'object:',variable[0],'moduleOfobject:',variable[1],'class:',variable[2])
            else:
                 if variable[1] in module_class :#can check if object in classnames or Not if found then 'object:'=variable[0]& 'class:',variable[1]
                     #print('module:', tail, 'object:', variable[0], 'Class:', variable[1])

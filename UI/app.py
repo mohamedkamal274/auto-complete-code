@@ -7,6 +7,7 @@ from PyQt5 import QtCore
 import DB
 import re
 import main as parser
+
 class mainScreen(QWidget):
     #
     # Calling the super to initialize the window
@@ -102,7 +103,9 @@ class mainScreen(QWidget):
 
     def itemSelect(self, item):
         self.selectCurrentWord()
-        self.cursor.insertText(item.text())
+        x=item.text()
+        self.dbobject.incrementCount(x)
+        self.cursor.insertText(x)
         self.suggestionList.hide()
 
     def selectCurrentWord(self):
@@ -151,7 +154,10 @@ class mainScreen(QWidget):
                 print(arr)
                 word = self.selectCurrentWord()
                 arr = [x for x in arr if word in x]
-
+        else:
+            word=self.selectCurrentWord()
+            importedModules = self.dbobject.getAll_modules()
+            arr = [x for x in importedModules if word in x]
         return arr
 
     def parse(self, item):
@@ -159,8 +165,8 @@ class mainScreen(QWidget):
             for x in re.findall(r'import (.+)', item)[0].replace('\u2029', '').split(','):
                 self.parserclass.parse(self.directory + os.sep + x + ".py")
 
-        elif re.search(r'(.+)\s*\=\s*(.+)\.(.+)', item):
-            groups = re.findall(r'\s*(.+)\s*=\s*(.+)\.(.+)',item)[0]
+        elif re.search(r'(.+?)\s*\=\s*(.+)\.(.+)', item):
+            groups = re.findall(r'\s*(.+?)\s*=\s*(.+)\.(.+)',item)[0]
             print(groups)
             classes=self.dbobject.getmoduleClasses(groups[1])
             className = groups[2].replace('\u2029', '')
@@ -168,7 +174,7 @@ class mainScreen(QWidget):
                 value=(groups[1],className)
                 key=groups[0]
                 self.dic[key]=value
-                print(self.dic)
+               #print(self.dic)
 
 
 
