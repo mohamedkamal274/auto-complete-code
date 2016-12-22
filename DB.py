@@ -204,19 +204,16 @@ class DATABASE():
 
         return modulsName
 
-    def getmoduleData(self,modulsName):
+    def getmoduleData(self, modulsName):
         moduleID = self.getModuleID(modulsName + ".py")
-        query = "select className from classes where moduleID = " + str(moduleID) + " ORDER BY count DESC"
+        query = "SELECT variableName FROM " \
+                " (select variableName,count  from moduleVariables where moduleID =  " + str(moduleID) + \
+                " union " \
+                " select functionName,count from moduleFunctions where moduleID =  " + str(moduleID) + \
+                " union select className,count from classes where moduleID =  " + str(moduleID) + \
+                " ORDER BY count DESC )"
         result = self.cursor.execute(query)
         data = list()
-        for row in result:
-            data.append(row[0])
-        query = "select functionName from moduleFunctions where moduleID = " + str(moduleID) + " ORDER BY count DESC"
-        result=self.cursor.execute(query)
-        for row in result:
-            data.append(row[0])
-        query = "select variableName from moduleVariables where moduleID = " + str(moduleID) + " ORDER BY count DESC"
-        result=self.cursor.execute(query)
         for row in result:
             data.append(row[0])
         return data
@@ -243,6 +240,12 @@ class DATABASE():
         self.cursor.execute(query5)
         query6 = "UPDATE classes SET count = count+1 where className = " + "'" + name + "'"
         self.cursor.execute(query6)
+        self.conn.commit()
+
+    def truncateModule(self, moduleName):
+        moduleID = self.getModuleID(moduleName)
+        query = "DELETE FROM Modules WHERE ID = " + str(moduleID)
+        self.cursor.execute(query)
         self.conn.commit()
 
     def truncate(self):

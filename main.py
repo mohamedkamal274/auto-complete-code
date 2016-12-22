@@ -35,6 +35,10 @@ class ClassParser(object):
       """ Parse the directory and spit out a csv file
       """
       try:
+        importedModules=database.getAll_modules()
+        if importedModules:
+          database.truncateModule(self.getTail(file))
+
         classes = self.findAllClasses(file)
         self.addNameeModule(file)
         self.addNameeClasses(file, classes)  #Name of classes of every file

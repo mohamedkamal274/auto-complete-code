@@ -6,6 +6,8 @@ class object():
 class yy(object):
     qqqq=0
     eeee=0
+
+
 class kk(object):
     def hello2(self):
         print("hello")

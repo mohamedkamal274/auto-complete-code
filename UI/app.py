@@ -62,6 +62,10 @@ class mainScreen(QWidget):
     def keyReleaseEvent(self, event):
         if event.key() == Qt.Key_Control:
             self.showList()
+            importedModules = self.dbobject.getAll_modules()
+            if importedModules:
+                for x in importedModules:
+                 self.parserclass.parse(self.directory + os.sep + x + ".py")
         elif event.key() in [Qt.Key_Return, Qt.Key_Enter]:
             self.parse(self.selectPreviousLine())
         else:
@@ -149,9 +153,7 @@ class mainScreen(QWidget):
                 arr = [x for x in arr if word in x]
 
             elif MoaduleOrObject in self.dic.keys():
-                print(1)
                 arr=self.dbobject.selectClassData(self.dic[MoaduleOrObject][1])
-                print(arr)
                 word = self.selectCurrentWord()
                 arr = [x for x in arr if word in x]
         else:
@@ -174,7 +176,7 @@ class mainScreen(QWidget):
                 value=(groups[1],className)
                 key=groups[0]
                 self.dic[key]=value
-               #print(self.dic)
+                print(self.dic)
 
 
 
