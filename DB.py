@@ -64,6 +64,7 @@ class DATABASE():
     def __init__(self):
         self.conn = sqlite3.connect(os.path.abspath(os.path.join(os.path.dirname(__file__), 'database', 'autoComplete.db')))
         self.cursor = self.conn.cursor()
+        self.cursor.execute("PRAGMA FOREIGN_KEYS = on")
 
     #add new Module in Module Table
     def addModule(self, module):
@@ -170,25 +171,27 @@ class DATABASE():
         record = self.cursor.execute(query)
         for x in record:
             list.append(x[0])
+
         query = "SELECT functionName FROM classFunction where classID= " + str(classID)
         record = self.cursor.execute(query)
         for x in record:
             list.append(x[0])
 
         #get PARENT DATA
+
         query = "SELECT inherited_classID FROM classes WHERE className = " + "'" + className + "'"
         record = self.cursor.execute(query)
         parentClass = record.fetchone()
-        if parentClass != None:
+        if not None in parentClass:
             query = "SELECT variableName FROM classVariables where classID= " + str(parentClass[0])
             record = self.cursor.execute(query)
+            print(3)
             for x in record:
                 list.append(x[0])
             query = "SELECT functionName FROM classFunction where classID= " + str(parentClass[0])
             record = self.cursor.execute(query)
             for x in record:
                 list.append(x[0])
-
         return list
 
     def getAll_modules(self):

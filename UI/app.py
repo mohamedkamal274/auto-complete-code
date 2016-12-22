@@ -138,7 +138,7 @@ class mainScreen(QWidget):
 
         elif re.search(r'\.', line):
             importedModules=self.dbobject.getAll_modules()
-            MoaduleOrObject=re.findall(r'(:?(:?.+?)=)?(.+?)\.', line)[0][2]
+            MoaduleOrObject=re.findall(r'(:?(:?.+?)\s*=\s*)?(.+?)\.', line)[0][2]
 
             if MoaduleOrObject in importedModules:
                 arr=self.dbobject.getmoduleData(MoaduleOrObject)
@@ -146,7 +146,9 @@ class mainScreen(QWidget):
                 arr = [x for x in arr if word in x]
 
             elif MoaduleOrObject in self.dic.keys():
+                print(1)
                 arr=self.dbobject.selectClassData(self.dic[MoaduleOrObject][1])
+                print(arr)
                 word = self.selectCurrentWord()
                 arr = [x for x in arr if word in x]
 
@@ -157,8 +159,9 @@ class mainScreen(QWidget):
             for x in re.findall(r'import (.+)', item)[0].replace('\u2029', '').split(','):
                 self.parserclass.parse(self.directory + os.sep + x + ".py")
 
-        elif re.search(r'(.+)\=(.+)\.(.+)', item):
+        elif re.search(r'(.+)\s*\=\s*(.+)\.(.+)', item):
             groups = re.findall(r'\s*(.+)\s*=\s*(.+)\.(.+)',item)[0]
+            print(groups)
             classes=self.dbobject.getmoduleClasses(groups[1])
             className = groups[2].replace('\u2029', '')
             if className in classes:
@@ -175,8 +178,7 @@ def main():
     app = QApplication(sys.argv)
     # Creating object from mainScreen
     main = mainScreen()
-
-    sys.exit((app.exec_(), main.dbobject.truncate()))
+    sys.exit((app.exec_(),main.dbobject.truncate()))
 
 
 if __name__ == "__main__":
