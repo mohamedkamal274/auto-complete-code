@@ -55,7 +55,7 @@ CREATE TABLE moduleVariables (
 );
 
 '''
-asasdsadsad
+
 class DATABASE():
     def __init__(self):
         self.conn = sqlite3.connect(os.path.abspath(os.path.join(os.path.dirname(__file__), 'database', 'autoComplete.db')))
@@ -263,3 +263,63 @@ class DATABASE():
         self.conn.commit()
         self.conn.close()
         return 1
+
+    #save incremented items in dictionary
+    def selectIncrementedCount(self):
+        fullDic = {}
+
+        query = "SELECT moduleName,count from Modules WHERE count > 0"
+        result = self.cursor.execute(query)
+        for item in result:
+            x = item[0]
+            fullDic[x[:-3]] = ('Modules' , item[1])
+
+        query = "SELECT className,count from classes WHERE count > 0"
+        result = self.cursor.execute(query)
+        for item in result:
+            fullDic[item[0]] = ('classes', item[1])
+
+        query = "SELECT functionName,count FROM classFunction WHERE count > 0"
+        result = self.cursor.execute(query)
+        for item in result:
+            fullDic[item[0]] = ('classFunction', item[1])
+
+        query = "SELECT variableName,count FROM classVariables WHERE count > 0"
+        result = self.cursor.execute(query)
+        for item in result:
+            fullDic[item[0]] = ('classVariables', item[1])
+
+        query = "SELECT functionName,count FROM moduleFunctions WHERE count > 0"
+        result = self.cursor.execute(query)
+        for item in result:
+            fullDic[item[0]] = ('moduleFunctions', item[1])
+
+        query = "SELECT variableName,count FROM moduleVariables WHERE count > 0"
+        result = self.cursor.execute(query)
+        for item in result:
+            fullDic[item[0]] = ('moduleVariables', item[1])
+
+        return fullDic
+
+    #put incremented items back in the database
+    def updateCount(self,dictonary):
+        for x in dictonary:
+            if dictonary[x][0] == "Modules":
+                query = "UPDATE " + dictonary[x][0] + " SET count = " + str(dictonary[x][1]) + " WHERE moduleName = " + "'" + x + ".py'"
+                self.cursor.execute(query)
+            if dictonary[x][0] == "classes":
+                query = "UPDATE " + dictonary[x][0] + " SET count = " + str(dictonary[x][1]) + " WHERE className = " + "'" + x + "'"
+                self.cursor.execute(query)
+            if dictonary[x][0] == "classFunction":
+                query = "UPDATE " + dictonary[x][0] + " SET count = " + str(dictonary[x][1]) + " WHERE functionName = " + "'" + x + "'"
+                self.cursor.execute(query)
+            if dictonary[x][0] == "classVariables":
+                query = "UPDATE " + dictonary[x][0] + " SET count = " + str(dictonary[x][1]) + " WHERE variableName = " + "'" + x + "'"
+                self.cursor.execute(query)
+            if dictonary[x][0] == "moduleFunctions":
+                query = "UPDATE " + dictonary[x][0] + " SET count = " + str(dictonary[x][1]) + " WHERE functionName = " + "'" + x + "'"
+                self.cursor.execute(query)
+            if dictonary[x][0] == "moduleVariables":
+                query = "UPDATE " + dictonary[x][0] + " SET count = " + str(dictonary[x][1]) + " WHERE variableName = " + "'" + x + "'"
+                self.cursor.execute(query)
+        self.conn.commit()
