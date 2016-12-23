@@ -175,7 +175,6 @@ class mainScreen(QWidget):
                 value=(groups[1],className)
                 key=groups[0]
                 self.dic[key]=value
-                print(self.dic)
 
 
 

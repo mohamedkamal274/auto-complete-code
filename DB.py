@@ -192,7 +192,7 @@ class DATABASE():
         finalList = []
         for name in list2:
             finalList.append(name[0])
-        print("------------>  ",finalList)
+        #print("------------>  ",finalList)
         return finalList
 
     #get all modules Name
@@ -322,4 +322,3 @@ class DATABASE():
             if dictonary[x][0] == "moduleVariables":
                 query = "UPDATE " + dictonary[x][0] + " SET count = " + str(dictonary[x][1]) + " WHERE variableName = " + "'" + x + "'"
                 self.cursor.execute(query)
-        self.conn.commit()

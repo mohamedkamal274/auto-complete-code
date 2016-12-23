@@ -8,7 +8,7 @@ class yy(object):
     eeee=0
 
 
-class kk(object):
+class ggggg(object):
     def hello2(self):
         print("hello")
     z=dssda

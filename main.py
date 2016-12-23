@@ -13,7 +13,6 @@ class ClassParser(object):
    objectre = re.compile(r'\s*(.+?)\s*=\s*(.+)\.(.+)')
 
    indent = "    "
-
    def findAllClasses(self, python_file):
       #Read in a python file and return all the class names
       with open(python_file) as infile:
@@ -35,6 +34,7 @@ class ClassParser(object):
       """ Parse the directory and spit out a csv file
       """
       try:
+        dbDictinoary=database.selectIncrementedCount()
         if self.getTail(file).replace('.py','') in database.getAll_modules():
             database.truncateModule(self.getTail(file))
         classes = self.findAllClasses(file)
@@ -45,6 +45,7 @@ class ClassParser(object):
         for classname in classes:
             self.findClassemethod(classname[0],file)
             self.findClassevariables(classname[0],file)
+        database.updateCount(dbDictinoary)
         database.conn.commit()
       except:
           print('cant open file')
