@@ -1,9 +1,6 @@
 import sqlite3
 import os
-#autoConnect DB
-#self.dbobject.getAll_modules()
 
-  #We need to use cursor to return data from selected lines(SELECT)
 
 #DB creation Code
 '''
@@ -58,7 +55,6 @@ CREATE TABLE moduleVariables (
 );
 
 '''
-
 
 class DATABASE():
     def __init__(self):
@@ -167,33 +163,39 @@ class DATABASE():
     def selectClassData(self, className):
         classID = self.getClassID(className)
         list = []
-        query = "SELECT variableName FROM classVariables where classID= " + str(classID) + " ORDER BY count DESC"
+        query = "SELECT variableName,count FROM classVariables where classID= " + str(classID)
         record = self.cursor.execute(query)
         for x in record:
-            list.append(x[0])
+            list.append((x[0],x[1]))
 
-        query = "SELECT functionName FROM classFunction where classID= " + str(classID) + " ORDER BY count DESC"
+        query = "SELECT functionName,count FROM classFunction where classID= " + str(classID)
         record = self.cursor.execute(query)
         for x in record:
-            list.append(x[0])
+            list.append((x[0],x[1]))
 
         #get PARENT DATA
 
         query = "SELECT inherited_classID FROM classes WHERE className = " + "'" + className + "'"
         record = self.cursor.execute(query)
         parentClass = record.fetchone()
-        if not None in parentClass:
-            query = "SELECT variableName FROM classVariables where classID= " + str(parentClass[0]) + " ORDER BY count DESC"
-            record = self.cursor.execute(query)
-            print(3)
-            for x in record:
-                list.append(x[0])
-            query = "SELECT functionName FROM classFunction where classID= " + str(parentClass[0]) + " ORDER BY count DESC"
+        if not None in parentClass:  #parentClass != NONE
+            query = "SELECT variableName,count FROM classVariables where classID= " + str(parentClass[0])
             record = self.cursor.execute(query)
             for x in record:
-                list.append(x[0])
-        return list
+                list.append((x[0],x[1]))
+            query = "SELECT functionName,count FROM classFunction where classID= " + str(parentClass[0])
+            record = self.cursor.execute(query)
+            for x in record:
+                list.append((x[0],x[1]))
 
+        list2 = sorted(list, reverse=True, key=lambda x: x[1]) #list with tuples ordered in reverse
+        finalList = []
+        for name in list2:
+            finalList.append(name[0])
+        print("------------>  ",finalList)
+        return finalList
+
+    #get all modules Name
     def getAll_modules(self):
         query = "select moduleName from Modules ORDER BY count DESC"
         result = self.cursor.execute(query)
@@ -204,13 +206,16 @@ class DATABASE():
 
         return modulsName
 
+    #get Modules data
     def getmoduleData(self, modulsName):
         moduleID = self.getModuleID(modulsName + ".py")
-        query = "SELECT variableName FROM " \
-                " (select variableName,count  from moduleVariables where moduleID =  " + str(moduleID) + \
+
+        query = "SELECT X FROM " \
+                " (select variableName AS X,count  from moduleVariables where moduleID =  " + str(moduleID) + \
                 " union " \
-                " select functionName,count from moduleFunctions where moduleID =  " + str(moduleID) + \
-                " union select className,count from classes where moduleID =  " + str(moduleID) + \
+                " select functionName AS X,count from moduleFunctions where moduleID =  " + str(moduleID) + \
+                " union " \
+                " select className AS X,count from classes where moduleID =  " + str(moduleID) + \
                 " ORDER BY count DESC )"
         result = self.cursor.execute(query)
         data = list()
@@ -218,6 +223,7 @@ class DATABASE():
             data.append(row[0])
         return data
 
+    #get classes in module
     def getmoduleClasses(self,modulsName):
         moduleID = self.getModuleID(modulsName + ".py")
         query = "select className from classes where moduleID = " + str(moduleID) + " ORDER BY count DESC"
@@ -227,6 +233,7 @@ class DATABASE():
             data.append(row[0])
         return data
 
+    #increment the selected item
     def incrementCount(self, name):
         query1 = "UPDATE Modules SET count = count+1 where moduleName = " + "'" + name+".py" + "'"
         self.cursor.execute(query1)
@@ -242,12 +249,14 @@ class DATABASE():
         self.cursor.execute(query6)
         self.conn.commit()
 
+    #delete specific module
     def truncateModule(self, moduleName):
         moduleID = self.getModuleID(moduleName)
         query = "DELETE FROM Modules WHERE ID = " + str(moduleID)
         self.cursor.execute(query)
         self.conn.commit()
 
+    #delete all modules before exit
     def truncate(self):
         query = "DELETE FROM Modules"
         self.cursor.execute(query)
