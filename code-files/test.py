@@ -6,7 +6,9 @@ class object():
 class yy(object):
     qqqq=0
     eeee=0
-class kk(object):
+
+
+class ggggg(object):
     def hello2(self):
         print("hello")
     z=dssda
@@ -18,9 +20,6 @@ class zz(object):
         print("hello")
     def hello4(self) :
         print("hello")
-    x=0
-    z= A.kkA
-    y=kk
 
 def hellomodules2():
     print("bbbbla")
