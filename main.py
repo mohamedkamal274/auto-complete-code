@@ -9,8 +9,8 @@ class ClassParser(object):
    class_expr = re.compile(r'class (.+?)(?:\((.+)*\))?\:')
    python_file_expr = re.compile(r'(.+?\.py)')
    methodre = re.compile(r'def (.+?)(?:\((.*?)\))?\s*:')
-   variable = re.compile(r'\s*(.+)\s*=\s*(.+)')
-   objectre = re.compile(r'\s*(.+)\s*=\s*(.+)\.(.+)')
+   variable = re.compile(r'\s*(.+?)\s*=\s*(.+)')
+   objectre = re.compile(r'\s*(.+?)\s*=\s*(.+)\.(.+)')
 
    indent = "   "
 
@@ -37,7 +37,6 @@ class ClassParser(object):
       try:
         if self.getTail(file).replace('.py','') in database.getAll_modules():
             database.truncateModule(self.getTail(file))
-
         classes = self.findAllClasses(file)
         self.addNameeModule(file)
         self.addNameeClasses(file, classes)  #Name of classes of every file
@@ -60,9 +59,7 @@ class ClassParser(object):
                 if flag == False:
                     if self.indent in line:
                         methods += self.methodre.findall(line)
-                        print(methods, ' ', line )
                     elif not self.indent in line and line[0].isalpha():
-                        print('end one ', line)
                         break
                 if flag == True:
                     class_name = classnamere.findall(line)
