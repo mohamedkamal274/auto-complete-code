@@ -55,7 +55,7 @@ CREATE TABLE moduleVariables (
 );
 
 '''
-
+asasdsadsad
 class DATABASE():
     def __init__(self):
         self.conn = sqlite3.connect(os.path.abspath(os.path.join(os.path.dirname(__file__), 'database', 'autoComplete.db')))
