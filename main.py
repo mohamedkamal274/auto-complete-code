@@ -12,7 +12,7 @@ class ClassParser(object):
    variable = re.compile(r'\s*(.+?)\s*=\s*(.+)')
    objectre = re.compile(r'\s*(.+?)\s*=\s*(.+)\.(.+)')
 
-   indent = "   "
+   indent = "    "
 
    def findAllClasses(self, python_file):
       #Read in a python file and return all the class names
@@ -57,7 +57,7 @@ class ClassParser(object):
             flag = True
             for line in infile.readlines():
                 if flag == False:
-                    if self.indent in line:
+                    if self.indent in line and line.count(self.indent)==1:
                         methods += self.methodre.findall(line)
                     elif not self.indent in line and line[0].isalpha():
                         break
@@ -75,7 +75,7 @@ class ClassParser(object):
            flag = True
            for line in infile:
                if flag == False:
-                   if self.indent in line:
+                   if self.indent in line and line.count(self.indent)==1:
                        if not 'def' in line and not 'class' in line:
                            if '.' in line:
                             varibles += self.objectre.findall(line)

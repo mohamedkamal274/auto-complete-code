@@ -18,7 +18,10 @@ def mkModulefunction():
 
 y=10
 CC = CLASS1111
-vv = A.kkA
+
+
+
+
 class CLASS22222():
     def FUN3(self):
         FUN3KK=123125451
