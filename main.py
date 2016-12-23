@@ -11,7 +11,7 @@ class ClassParser(object):
    methodre = re.compile(r'def (.+?)(?:\((.*?)\))?\s*:')
    variable = re.compile(r'\s*(.+?)\s*=\s*(.+)')
    objectre = re.compile(r'\s*(.+?)\s*=\s*(.+)\.(.+)')
-
+   costructvar = re.compile(r'self\.(.+?)\s*=\s*(.+)')
    indent = "    "
    def findAllClasses(self, python_file):
       #Read in a python file and return all the class names
@@ -48,7 +48,7 @@ class ClassParser(object):
         database.updateCount(dbDictinoary)
         database.conn.commit()
       except:
-          print('cant open file')
+          print('these class may be imported later on ')
    def findClassemethod(self, classname , python_file):
        #Read in a python file and return all the class methodes
 
@@ -69,8 +69,29 @@ class ClassParser(object):
        #print( python_file ,' ',classname , ' : ' ,methods)
        self.addmethodClass(python_file,classname,methods)
 
+   def findConstrucorVariables(self, classname, python_file):
+       vars = []
+       with open(python_file) as fileData:
+           flagclass = True
+           flagcon = True
+           flagend = True
+           for line in fileData:
+               if 'class' in line and classname in line:
+                   flagclass = False
+               elif not flagclass:
+                   if self.indent in line and line[4].isalpha() and not '__init__' in line or line[0].isalpha():
+                       flagend = False
+                   elif flagend:
+                       if 'def' in line and '__init__' in line and flagcon:
+                           flagcon = False
+                       else:
+                           vars += self.costructvar.findall(line)
+               if not flagend:
+                   break
+           return vars
+
    def findClassevariables(self, classname, python_file):
-       varibles = []
+       varibles = self.findConstrucorVariables(classname,python_file)
        classnamere = re.compile(r'class ' + classname + '(?:\((.+)*\))?\:')
        with open(python_file) as infile:
            flag = True

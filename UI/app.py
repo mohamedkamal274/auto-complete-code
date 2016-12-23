@@ -59,6 +59,8 @@ class mainScreen(QWidget):
         self.cursor = self.codeEditor.textCursor()
 
     #Show the list when Control is entered
+    #for every "ctrl" parse imported modules and show list
+    #for every "enter" parse previous Line
     def keyReleaseEvent(self, event):
         if event.key() == Qt.Key_Control:
             self.showList()
@@ -83,6 +85,7 @@ class mainScreen(QWidget):
         self.suggestionList.setGraphicsEffect(self.shadow)
 
     # suggestionListList Functions`
+    #to showList determine get current line and send it to function get to get List
     def showList(self):  # Show AutoComleteList
         rect = self.codeEditor.cursorRect()
         self.clearWidget(self.suggestionList)
@@ -136,45 +139,46 @@ class mainScreen(QWidget):
 
     def get(self,line):
         arr = []
-        if re.search(r'import ', line):
+        if re.search(r'import ', line): #check if line has import
             arr = [self.parserclass.getTail(x).replace('.py', '') for x in self.parserclass.findAllPythonFiles(self.directory)]
             if re.search(r'import (.+)', line):
                 modules = re.findall(r'import (.+)', line)[0].split(',')
                 arr = [x for x in arr if modules[-1] in x]
 
 
-        elif re.search(r'\.', line):
-            importedModules=self.dbobject.getAll_modules()
-            MoaduleOrObject=re.findall(r'(:?(:?.+?)\s*=\s*)?(.+?)\.', line)[0][2]
+        elif re.search(r'\.', line): #check if line has " . " -for-> object from class | module Data
+            importedModules=self.dbobject.getAll_modules() #get all modules to check that previous dot is module or not
+            MoaduleOrObject=re.findall(r'(:?(:?.+?)\s*=\s*)?(.+?)\.', line)[0][2] #get word that previous of dot to check
 
-            if MoaduleOrObject in importedModules:
-                arr=self.dbobject.getmoduleData(MoaduleOrObject)
-                word=self.selectCurrentWord()
-                arr = [x for x in arr if word in x]
+            if MoaduleOrObject in importedModules: #if it module
+                arr=self.dbobject.getmoduleData(MoaduleOrObject) #get all module data
+                word=self.selectCurrentWord() #get word to show list depend on it
+                arr = [x for x in arr if word in x] #search for word in arr and append in arr
 
-            elif MoaduleOrObject in self.dic.keys():
-                arr=self.dbobject.selectClassData(self.dic[MoaduleOrObject][1])
+            elif MoaduleOrObject in self.dic.keys(): #if it "object" -mean->if word is in dictionary of objects
+                arr=self.dbobject.selectClassData(self.dic[MoaduleOrObject][1]) #send className to get class data and append to arr
                 word = self.selectCurrentWord()
                 arr = [x for x in arr if word in x]
         else:
-            word=self.selectCurrentWord()
+            word=self.selectCurrentWord() #else complete Modules Name
             importedModules = self.dbobject.getAll_modules()
             arr = [x for x in importedModules if word in x]
         return arr
 
+    #to parse previous Line
     def parse(self, item):
-        if re.search(r'import (.+)', item):
-            for x in re.findall(r'import (.+)', item)[0].replace('\u2029', '').split(','):
+        if re.search(r'import (.+)', item):  #check if line has import
+            for x in re.findall(r'import (.+)', item)[0].replace('\u2029', '').split(','): #get all files that imported and send them to parse
                 self.parserclass.parse(self.directory + os.sep + x + ".py")
 
-        elif re.search(r'(.+?)\s*\=\s*(.+)\.(.+)', item):
-            groups = re.findall(r'\s*(.+?)\s*=\s*(.+)\.(.+)',item)[0]
-            classes=self.dbobject.getmoduleClasses(groups[1])
-            className = groups[2].replace('\u2029', '')
-            if className in classes:
-                value=(groups[1],className)
-                key=groups[0]
-                self.dic[key]=value
+        elif re.search(r'(.+?)\s*\=\s*(.+)\.(.+)', item): #check if line has declaraion object of class
+            groups = re.findall(r'\s*(.+?)\s*=\s*(.+)\.(.+)',item)[0] #because it return [(groups)] and wn need tuple
+            classes=self.dbobject.getmoduleClasses(groups[1]) #group 1 is ModuleName then we get all classes to check
+            className = groups[2].replace('\u2029', '') #remove unicode from Name of className
+            if className in classes: #check if class name is class in classes
+                value=(groups[1],className) #make value of key contain (moduleName,ClassName)
+                key=groups[0] #key is a object
+                self.dic[key]=value #append to dictionary
 
 
 
