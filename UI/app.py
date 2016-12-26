@@ -1,5 +1,6 @@
 import os
 import sys
+sys.path.insert(0, '..')
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -152,7 +153,6 @@ class mainScreen(QWidget):
 
             try:
              MoaduleOrObject=re.findall(r'(:?(:?.+?)\s*=\s*)?(.+?)\.', line)[0][2] #get word that previous of dot to check
-
              if MoaduleOrObject in importedModules:  # if it module
                  arr = self.dbobject.getmoduleData(MoaduleOrObject)  # get all module data
                  word = self.selectCurrentWord()  # get word to show list depend on it
