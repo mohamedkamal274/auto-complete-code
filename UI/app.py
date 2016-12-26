@@ -63,11 +63,12 @@ class mainScreen(QWidget):
     #for every "enter" parse previous Line
     def keyReleaseEvent(self, event):
         if event.key() == Qt.Key_Control:
-            self.showList()
+
             importedModules = self.dbobject.getAll_modules()
             if importedModules:
                 for x in importedModules:
                  self.parserclass.parse(self.directory + os.sep + x + ".py")
+            self.showList()
         elif event.key() in [Qt.Key_Return, Qt.Key_Enter]:
             self.parse(self.selectPreviousLine())
         else:
