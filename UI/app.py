@@ -149,17 +149,22 @@ class mainScreen(QWidget):
 
         elif re.search(r'\.', line): #check if line has " . " -for-> object from class | module Data
             importedModules=self.dbobject.getAll_modules() #get all modules to check that previous dot is module or not
-            MoaduleOrObject=re.findall(r'(:?(:?.+?)\s*=\s*)?(.+?)\.', line)[0][2] #get word that previous of dot to check
 
-            if MoaduleOrObject in importedModules: #if it module
-                arr=self.dbobject.getmoduleData(MoaduleOrObject) #get all module data
-                word=self.selectCurrentWord() #get word to show list depend on it
-                arr = [x for x in arr if word in x] #search for word in arr and append in arr
+            try:
+             MoaduleOrObject=re.findall(r'(:?(:?.+?)\s*=\s*)?(.+?)\.', line)[0][2] #get word that previous of dot to check
 
-            elif MoaduleOrObject in self.dic.keys(): #if it "object" -mean->if word is in dictionary of objects
-                arr=self.dbobject.selectClassData(self.dic[MoaduleOrObject][1]) #send className to get class data and append to arr
-                word = self.selectCurrentWord()
-                arr = [x for x in arr if word in x]
+             if MoaduleOrObject in importedModules:  # if it module
+                 arr = self.dbobject.getmoduleData(MoaduleOrObject)  # get all module data
+                 word = self.selectCurrentWord()  # get word to show list depend on it
+                 arr = [x for x in arr if word in x]  # search for word in arr and append in arr
+
+             elif MoaduleOrObject in self.dic.keys():  # if it "object" -mean->if word is in dictionary of objects
+                 arr = self.dbobject.selectClassData(
+                     self.dic[MoaduleOrObject][1])  # send className to get class data and append to arr
+                 word = self.selectCurrentWord()
+                 arr = [x for x in arr if word in x]
+            except:
+                arr=[]
         else:
             word=self.selectCurrentWord() #else complete Modules Name
             importedModules = self.dbobject.getAll_modules()
