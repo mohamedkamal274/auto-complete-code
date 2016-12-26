@@ -118,17 +118,20 @@ class mainScreen(QWidget):
         self.suggestionList.hide()
 
     def selectCurrentWord(self):
+        self.cursor = self.codeEditor.textCursor()
         self.cursor.select(QTextCursor.WordUnderCursor)
         self.codeEditor.setTextCursor(self.cursor)
         word = self.cursor.selectedText()
         return word
     def selectCurrentLine(self):
+        self.cursor = self.codeEditor.textCursor()
         self.cursor.movePosition(QTextCursor.StartOfBlock)
         self.cursor.movePosition(QTextCursor.EndOfBlock, QTextCursor.KeepAnchor)
         line = self.cursor.selectedText()
         return line
 
     def selectPreviousLine(self):
+        self.cursor = self.codeEditor.textCursor()
         self.cursor.movePosition(QTextCursor.PreviousBlock)
         self.cursor.movePosition(QTextCursor.NextBlock, QTextCursor.KeepAnchor)
         line = self.cursor.selectedText()
@@ -194,7 +197,10 @@ def main():
     app = QApplication(sys.argv)
     # Creating object from mainScreen
     main = mainScreen()
-    sys.exit((app.exec_(),main.dbobject.truncate()))
+    try:
+        sys.exit((app.exec_(),main.dbobject.truncate()))
+    except:
+        print()
 
 
 if __name__ == "__main__":
