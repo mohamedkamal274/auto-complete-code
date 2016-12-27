@@ -60,7 +60,7 @@ class mainScreen(QWidget):
         self.cursor = self.codeEditor.textCursor()
         importFileButton = QPushButton("+", self)
         importFileButton.move(self.width() * 0.9, self.height() * 0.84)
-        importFileButton.clicked.connect(self.getfiles)
+        importFileButton.clicked.connect(self.openFile)
 
 
     #Show the list when Control is entered
@@ -194,7 +194,7 @@ class mainScreen(QWidget):
                 self.dic[key]=value #append to dictionary
 
 
-    def getfiles(self):
+    def openFile(self):
         openFileDialog = QFileDialog()
         openFileDialog.setFileMode(QFileDialog.ExistingFile)
         # dlg.setFilter("Python files (*.py)")
